@@ -57,14 +57,14 @@ function App() {
            <img src="./new/assets/logos/imdb.svg" className="w-6 h-6" />
             </a>
              <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="PUNCHUP">
-              <img src="./new/assets/logos/punchup.svg" className="w-6 h-6" />
+              <img src="./new/assets/logos/punchup.svg" className="h-3" />
             </a> 
           </div>
 
           {/* Right: Credits */}
           <a href="http://gabemade.it" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-gray-500 hover:text-white transition-colors group">
             Made by 
-            <img src="https://gabemade.it/samjay/new/assets/images/gabemadeit-white-logo.svg" alt="Gabemade" className="h-4 opacity-70 group-hover:opacity-100 transition-opacity" /> 
+            <img src="./new/assets/images/gabemadeit-white-logo.svg" alt="Gabemade" className="h-4 opacity-70 group-hover:opacity-100 transition-opacity" /> 
             with ❤️
           </a>
 

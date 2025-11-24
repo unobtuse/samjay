@@ -32,7 +32,7 @@ const Navigation = ({ mobileOpen, setMobileOpen }) => {
         </a>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
             <a 
               key={link.name}
@@ -58,9 +58,9 @@ const Navigation = ({ mobileOpen, setMobileOpen }) => {
             <a href="https://www.imdb.com/name/nm7615637/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="IMDb">
               <img src="./new/assets/logos/imdb.svg" className="w-6 h-6" />
             </a>
-         <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="PUNCHUP">
-              <img src="./new/assets/logos/punchup.svg" className="w-6 h-6" />
-            </a> </div>
+         <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:!fill-sam-red" title="PUNCHUP">
+              <img src="./new/assets/logos/punchup.svg" className="h-3" />
+            </a>  </div>
 
         {/* Mobile Toggle */}
         <button 
@@ -107,6 +107,9 @@ const Navigation = ({ mobileOpen, setMobileOpen }) => {
               <a href="https://www.imdb.com/name/nm7615637/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-xl leading-none" title="IMDb">
                  <img src="./new/assets/logos/imdb.svg" className="w-6 h-6" />
               </a>
+               <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="PUNCHUP">
+              <img src="./new/assets/logos/punchup.svg" className="h-3" />
+            </a> 
             </div>
           </motion.div>
         )}

@@ -8,7 +8,7 @@ const Podcasts = () => {
 
   useEffect(() => {
     // Fetch from local API instead of static JSON
-    fetch(`/samjay/api/podcasts.php?q=sam%20jay&limit=50&t=${new Date().getTime()}`)
+    fetch(`./api/podcasts.php?q=sam%20jay&limit=50&t=${new Date().getTime()}`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();

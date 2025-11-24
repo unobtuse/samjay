@@ -16,7 +16,7 @@ const Hero = () => {
 
   // Fetch data
   useEffect(() => {
-    fetch('/samjay/new/json/specials.json')
+    fetch('./new/json/specials.json')
       .then(res => res.json())
       .then(data => {
         setSpecials(data);

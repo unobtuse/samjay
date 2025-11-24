@@ -21,8 +21,8 @@ const Tour = () => {
     // Assuming the webroot is /var/www/html/gabemade/public/
     // Then the URL to the public json is /samjay/react/public/data/tour-dates.json
     
-    // Use the specified absolute URL for the JSON file
-    const dataUrl = 'https://gabemade.it/samjay/new/json/tour-dates.json'; 
+    // Use relative path for the JSON file to work on both subdomain and /samjay/ path
+    const dataUrl = './new/json/tour-dates.json'; 
     
     fetch(`${dataUrl}?t=${new Date().getTime()}`)
       .then(res => {

@@ -7,7 +7,7 @@ const Press = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/samjay/api/press.php?t=${new Date().getTime()}`)
+    fetch(`./api/press.php?t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.items) {

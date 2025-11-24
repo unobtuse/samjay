@@ -45,7 +45,7 @@ const InstagramFeed = () => {
             .map(m => m.thumbnail_url || m.url)
             .filter(Boolean)
             .slice(0, 3)
-            .map(url => `/samjay/api/instagram-image.php?src=${encodeURIComponent(btoa(url))}`);
+            .map(url => `./api/instagram-image.php?src=${encodeURIComponent(btoa(url))}`);
           
           if (images.length === 0) return null;
 

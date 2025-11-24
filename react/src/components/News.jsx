@@ -8,7 +8,7 @@ const News = () => {
 
   useEffect(() => {
     // Fetch from our custom PHP endpoint that scrapes OG tags
-    fetch(`/samjay/api/fetch-news.php?t=${new Date().getTime()}`)
+    fetch(`./api/fetch-news.php?t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
