@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
@@ -10,10 +10,13 @@ import InstagramFeed from './components/InstagramFeed';
 import SplineBackground from './components/SplineBackground';
 
 function App() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <main className="min-h-screen text-white selection:bg-sam-red selection:text-white relative">
-      <SplineBackground />
-      <Navigation />
+    <>
+      <Navigation mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+      <main className={`min-h-screen text-white selection:bg-sam-red selection:text-white relative transition-all duration-500 ${mobileOpen ? 'blur-xl scale-95 opacity-50 pointer-events-none' : ''}`}>
+        <SplineBackground />
       <div id="hero"><Hero /></div>
       <div id="tour"><Tour /></div>
       <div id="videos"><Videos /></div>
@@ -31,7 +34,7 @@ function App() {
           {/* Left: Brand & Copyright */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <span className="font-logo font-black tracking-tighter text-2xl text-white uppercase scale-y-110">
-              <img src="/samjay/new/assets/logos/sam-jay-logo-darkmode.svg" className="w-12h-12 m-6" alt="Sam Jay" />
+              <img src="./new/assets/logos/sam-jay-logo-darkmode.svg" className="h-8 mb-2" alt="Sam Jay" />
             </span>
             <span className="text-xs">© 2025 SAM JAY. ALL RIGHTS RESERVED.</span>
           </div>
@@ -51,8 +54,11 @@ function App() {
               <Youtube className="w-5 h-5" />
             </a>
             <a href="https://www.imdb.com/name/nm7615637/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sam-red transition-colors font-black text-lg leading-none" title="IMDb">
-              IMDb
+           <img src="./new/assets/logos/imdb.svg" className="w-6 h-6" />
             </a>
+             <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="PUNCHUP">
+              <img src="./new/assets/logos/punchup.svg" className="w-6 h-6" />
+            </a> 
           </div>
 
           {/* Right: Credits */}
@@ -64,7 +70,8 @@ function App() {
 
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
 

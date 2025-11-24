@@ -48,7 +48,7 @@ const News = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
-            className="group flex flex-col glass-card h-full overflow-hidden hover:shadow-xl/30 hover:scale-110 hover:z-3 transition-all duration-500"
+            className="group flex flex-col glass-card  overflow-hidden hover:shadow-xl/30 hover:scale-110 hover:z-3 transition-all duration-500"
           >
             {/* Thumbnail Container */}
             <div className="relative w-full h-48 bg-gray-900 overflow-hidden">

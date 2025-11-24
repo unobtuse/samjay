@@ -120,8 +120,10 @@ const Tour = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.05 }}
-            className="group relative flex flex-col md:flex-row items-start md:items-center justify-between p-6 border-b border-white/10 hover:border-sam-red/50 hover:bg-white/5 transition-all duration-300"
+            className="group relative flex flex-col md:flex-row items-start md:items-center justify-between p-6 border-b border-transparent hover:border-sam-red/50 hover:bg-white/5 transition-all duration-300"
           >
+            {/* Gradient Border Line */}
+            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-sam-red/50 transition-colors duration-300" />
             {/* Date */}
             <div className="flex items-center gap-4 md:w-1/4 mb-2 md:mb-0">
               <Calendar className="w-5 h-5 text-sam-red" />
@@ -133,7 +135,7 @@ const Tour = () => {
               <span className="font-mono text-lg text-white group-hover:text-sam-red transition-colors">
                 {show.city}
               </span>
-              <span className="text-gray-500 text-sm flex items-center gap-2">
+              <span className="text-white/80 text-sm flex items-center gap-2">
                 <MapPin className="w-3 h-3" />
                 {show.venue}
               </span>

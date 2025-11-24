@@ -12,6 +12,7 @@ const Hero = () => {
   
   const videoRef = useRef(null);
   const posterTimeoutRef = useRef(null);
+  const fadeIntervalRef = useRef(null);
 
   // Fetch data
   useEffect(() => {
@@ -33,6 +34,7 @@ const Hero = () => {
     // Reset video if it exists
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
+      videoRef.current.volume = 0; // Start silent
       videoRef.current.load(); // Force reload for new source
     }
 
@@ -41,14 +43,78 @@ const Hero = () => {
     posterTimeoutRef.current = setTimeout(() => {
       setIsPosterVisible(false);
       if (videoRef.current && !isModalOpen) {
-        videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
+        // Attempt to play unmuted
+        videoRef.current.play()
+          .then(() => {
+            fadeInAudio();
+          })
+          .catch(e => {
+            console.log("Autoplay prevented, falling back to muted:", e);
+            videoRef.current.muted = true;
+            videoRef.current.play();
+          });
       }
     }, 3000);
 
     return () => {
       if (posterTimeoutRef.current) clearTimeout(posterTimeoutRef.current);
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
   }, [currentIndex, specials, isModalOpen]);
+
+  // Audio Fade In Logic
+  const fadeInAudio = () => {
+    if (!videoRef.current) return;
+    
+    // Clear any existing fade interval
+    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+
+    let vol = 0;
+    videoRef.current.volume = vol;
+    
+    fadeIntervalRef.current = setInterval(() => {
+      if (!videoRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        return;
+      }
+
+      // Check scroll position - don't fade in if scrolled down
+      if (window.scrollY > 100) {
+        clearInterval(fadeIntervalRef.current);
+        return;
+      }
+
+      if (vol < 1) {
+        vol += 0.05; // Increment volume
+        if (vol > 1) vol = 1;
+        videoRef.current.volume = vol;
+      } else {
+        clearInterval(fadeIntervalRef.current);
+      }
+    }, 200); // 200ms * 20 steps = 4 seconds to full volume
+  };
+
+  // Scroll Volume Logic
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!videoRef.current || isModalOpen) return;
+
+      const maxScroll = window.innerHeight; // Fade out completely by 1 screen height
+      const scrollY = window.scrollY;
+      
+      // Calculate volume based on scroll: 1 at top, 0 at maxScroll
+      let newVolume = 1 - (scrollY / maxScroll);
+      
+      // Clamp volume between 0 and 1
+      if (newVolume < 0) newVolume = 0;
+      if (newVolume > 1) newVolume = 1;
+
+      videoRef.current.volume = newVolume;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isModalOpen]);
 
   // Pause background video when modal is open
   useEffect(() => {
@@ -160,7 +226,7 @@ const Hero = () => {
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
             src={currentSpecial.video}
-            muted
+            // Removed muted attribute to allow sound
             playsInline
             onTimeUpdate={handleVideoUpdate}
             onEnded={handleVideoEnded}
@@ -198,7 +264,7 @@ const Hero = () => {
 
             {/* Metadata */}
             <motion.div 
-              className="flex items-center gap-2 text-sm md:text-base font-mono text-gray-300 mb-2"
+              className="flex items-center gap-2 text-sm md:text-base font-mono text-sam-red mb-2"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -224,7 +290,7 @@ const Hero = () => {
 
             {/* Buttons */}
             <motion.div 
-              className="flex flex-wrap justify-start gap-4"
+              className="flex flex-row justify-start gap-4"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -232,9 +298,7 @@ const Hero = () => {
               {currentSpecial.trailer && (
                 <button 
                   onClick={() => openModal(currentSpecial.trailer)}
-                  className="px-3 py-3 bg-sam-black/90 text-white font-bold border border-white uppercase tracking-wider hover:bg-white hover:text-black transition-colors flex items-center gap-2 backdrop-blur-sm"
-                >
-                  <Play className="w-4 h-4 fill-current" />
+                  className="px-3 py-3 text-sm bg-sam-black/90 text-white font-mono  border border-white uppercase tracking-wider hover:bg-white hover:text-black transition-colors flex items-center gap-2 backdrop-blur-sm text-left">
                   Watch Trailer
                 </button>
               )}
@@ -244,9 +308,9 @@ const Hero = () => {
                   href={currentSpecial['watch-link']} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="px-3 py-3 bg-sam-black/90 text-sam-red font-bold border border-sam-red uppercase tracking-wider hover:bg-sam-red hover:text-black transition-colors flex items-center gap-2 backdrop-blur-sm"
+                  className="px-3 py-3 text-sm bg-sam-black/90 text-sam-red font-mono  border border-sam-red uppercase tracking-wider hover:bg-sam-red hover:text-black transition-colors flex items-center gap-2 backdrop-blur-sm text-left"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <Play className="w-4 h-4 fill-current" />
                   Stream on {currentSpecial.network}
                 </a>
               )}
@@ -256,7 +320,7 @@ const Hero = () => {
       </AnimatePresence>
 
       {/* Navigation Dots */}
-      <div className="absolute z-40 flex gap-3
+      <div className="absolute z-40 hover:scale-125 transition-all duration-300 flex gap-3
         /* Mobile: Vertical, Right side, Centered vertically */
         flex-col right-4 top-1/2 -translate-y-1/2
         /* Desktop: Horizontal, Bottom Right */
