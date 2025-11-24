@@ -22,6 +22,9 @@ PLAYLISTS = [
     }
 ]
 
+# Main channel videos page
+CHANNEL_VIDEOS_URL = "https://www.youtube.com/@samjaycomic/videos"
+
 OUTPUT_FILE = "/var/www/html/gabemade/public/samjay/react/public/data/videos.json"
 
 def fetch_url(url):
@@ -79,9 +82,57 @@ def parse_videos(data, playlist_name):
     
     return videos
 
+def parse_channel_videos(data):
+    videos = []
+    try:
+        # Navigate down to the channel videos list
+        # Path: contents -> twoColumnBrowseResultsRenderer -> tabs -> [1] -> tabRenderer -> content -> richGridRenderer -> contents
+        
+        tabs = data['contents']['twoColumnBrowseResultsRenderer']['tabs']
+        # Videos tab is usually the second tab (index 1)
+        for tab_data in tabs:
+            if 'tabRenderer' in tab_data:
+                tab = tab_data['tabRenderer']
+                if 'content' in tab and 'richGridRenderer' in tab['content']:
+                    content = tab['content']['richGridRenderer']['contents']
+                    
+                    for item in content:
+                        if 'richItemRenderer' in item:
+                            video_renderer = item['richItemRenderer']['content'].get('videoRenderer', {})
+                            video_id = video_renderer.get('videoId')
+                            title = video_renderer.get('title', {}).get('runs', [{}])[0].get('text', 'Unknown Title')
+                            
+                            if video_id:
+                                videos.append({
+                                    "title": title,
+                                    "img": f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",
+                                    "link": f"https://www.youtube.com/watch?v={video_id}",
+                                    "category": "Recent"
+                                })
+                    break
+    except Exception as e:
+        print(f"Error parsing channel videos: {e}")
+    
+    return videos
+
 def main():
     all_videos = []
     
+    # First, fetch from main channel videos page
+    print("Processing main channel videos...")
+    html = fetch_url(CHANNEL_VIDEOS_URL)
+    if html:
+        data = extract_initial_data(html)
+        if data:
+            videos = parse_channel_videos(data)
+            print(f"Found {len(videos)} videos from main channel.")
+            all_videos.extend(videos)
+        else:
+            print("Could not find ytInitialData for main channel")
+    else:
+        print("Could not fetch main channel videos")
+    
+    # Then fetch from playlists
     for playlist in PLAYLISTS:
         name = playlist['playlist-name']
         url = playlist['playlist-url']

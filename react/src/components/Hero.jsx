@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, ExternalLink, X } from 'lucide-react';
+import { Play, ExternalLink, X, Volume2, VolumeX } from 'lucide-react';
 
 const Hero = () => {
   const [specials, setSpecials] = useState([]);
@@ -9,10 +9,15 @@ const Hero = () => {
   const [progress, setProgress] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTrailerUrl, setCurrentTrailerUrl] = useState('');
+  const [isMuted, setIsMuted] = useState(true); // Start muted for iOS autoplay
+  const [buttonPosition, setButtonPosition] = useState('center'); // 'center' or 'corner'
   
   const videoRef = useRef(null);
   const posterTimeoutRef = useRef(null);
   const fadeIntervalRef = useRef(null);
+  const userHasInteracted = useRef(false); // Track if user has clicked mute/unmute
+  const isDraggingRef = useRef(false); // Track if user is currently swiping
+  const heroContainerRef = useRef(null); // Track hero container for viewport detection
 
   // Fetch data
   useEffect(() => {
@@ -24,92 +29,97 @@ const Hero = () => {
       .catch(err => console.error("Failed to load specials:", err));
   }, []);
 
+  // Calculate volume based on hero's visibility in viewport
+  const calculateVolume = () => {
+    if (isModalOpen || !heroContainerRef.current) return 0;
+    
+    const rect = heroContainerRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    
+    // If hero is completely above viewport (scrolled past)
+    if (rect.bottom <= 0) return 0;
+    
+    // If hero is completely below viewport (not scrolled to yet)
+    if (rect.top >= viewportHeight) return 0;
+    
+    // Hero is at least partially visible
+    // Calculate what percentage of the hero is visible
+    let visibleHeight;
+    
+    if (rect.top >= 0 && rect.bottom <= viewportHeight) {
+      // Fully visible
+      visibleHeight = rect.height;
+    } else if (rect.top < 0) {
+      // Top is cut off
+      visibleHeight = rect.bottom;
+    } else {
+      // Bottom is cut off
+      visibleHeight = viewportHeight - rect.top;
+    }
+    
+    const visibilityRatio = visibleHeight / rect.height;
+    
+    // Fade out as hero leaves viewport
+    // Use a curve for smoother fade (square root makes it less aggressive)
+    const volume = Math.sqrt(visibilityRatio);
+    
+    return Math.max(0, Math.min(1, volume));
+  };
+
+  // Handle playback when video is ready
+  const handleCanPlay = (e) => {
+    const videoEl = e.target;
+    if (!videoEl || isModalOpen) return;
+
+    // If user has interacted, respect their preference
+    if (userHasInteracted.current) {
+      videoEl.muted = isMuted;
+      videoEl.volume = isMuted ? 0 : calculateVolume();
+    } else {
+      // First load: ensure muted for iOS autoplay
+      videoEl.muted = true;
+      videoEl.volume = 0;
+    }
+    
+    // Just play - iOS will allow it since muted=true
+    videoEl.play()
+      .then(() => {
+        console.log("Video autoplay successful");
+      })
+      .catch(e => {
+        console.log("Autoplay failed:", e);
+      });
+  };
+
   // Handle slide change
   useEffect(() => {
     if (specials.length === 0) return;
 
     setIsPosterVisible(true);
     setProgress(0);
-    
-    // Reset video if it exists
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.volume = 0; // Start silent
-      videoRef.current.load(); // Force reload for new source
-    }
 
     // Fade out poster after 3 seconds
     if (posterTimeoutRef.current) clearTimeout(posterTimeoutRef.current);
     posterTimeoutRef.current = setTimeout(() => {
       setIsPosterVisible(false);
       if (videoRef.current && !isModalOpen) {
-        // Attempt to play unmuted
-        videoRef.current.play()
-          .then(() => {
-            fadeInAudio();
-          })
-          .catch(e => {
-            console.log("Autoplay prevented, falling back to muted:", e);
-            videoRef.current.muted = true;
-            videoRef.current.play();
-          });
+        // When poster fades, ensure volume is correct (in case of scroll during transition)
+        if (!videoRef.current.muted) {
+            videoRef.current.volume = calculateVolume();
+        }
       }
     }, 3000);
 
     return () => {
       if (posterTimeoutRef.current) clearTimeout(posterTimeoutRef.current);
-      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
   }, [currentIndex, specials, isModalOpen]);
-
-  // Audio Fade In Logic
-  const fadeInAudio = () => {
-    if (!videoRef.current) return;
-    
-    // Clear any existing fade interval
-    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-
-    let vol = 0;
-    videoRef.current.volume = vol;
-    
-    fadeIntervalRef.current = setInterval(() => {
-      if (!videoRef.current) {
-        clearInterval(fadeIntervalRef.current);
-        return;
-      }
-
-      // Check scroll position - don't fade in if scrolled down
-      if (window.scrollY > 100) {
-        clearInterval(fadeIntervalRef.current);
-        return;
-      }
-
-      if (vol < 1) {
-        vol += 0.05; // Increment volume
-        if (vol > 1) vol = 1;
-        videoRef.current.volume = vol;
-      } else {
-        clearInterval(fadeIntervalRef.current);
-      }
-    }, 200); // 200ms * 20 steps = 4 seconds to full volume
-  };
 
   // Scroll Volume Logic
   useEffect(() => {
     const handleScroll = () => {
-      if (!videoRef.current || isModalOpen) return;
-
-      const maxScroll = window.innerHeight; // Fade out completely by 1 screen height
-      const scrollY = window.scrollY;
-      
-      // Calculate volume based on scroll: 1 at top, 0 at maxScroll
-      let newVolume = 1 - (scrollY / maxScroll);
-      
-      // Clamp volume between 0 and 1
-      if (newVolume < 0) newVolume = 0;
-      if (newVolume > 1) newVolume = 1;
-
-      videoRef.current.volume = newVolume;
+      if (!videoRef.current || isModalOpen || isDraggingRef.current) return;
+      videoRef.current.volume = calculateVolume();
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -156,7 +166,21 @@ const Hero = () => {
   };
 
   // Swipe handlers
+  const onDragStart = () => {
+    isDraggingRef.current = true;
+  };
+
   const onDragEnd = (event, info) => {
+    isDraggingRef.current = false;
+    
+    // Mark interaction to prevent muting on swipe
+    userHasInteracted.current = true;
+    
+    // Force resume play on touch end if needed
+    if (videoRef.current && videoRef.current.paused && !isModalOpen) {
+       videoRef.current.play().catch(e => console.log("Resume on touch end failed:", e));
+    }
+
     if (info.offset.x < -100) {
       nextSlide();
     } else if (info.offset.x > 100) {
@@ -192,7 +216,24 @@ const Hero = () => {
     setCurrentTrailerUrl('');
   };
 
-  if (specials.length === 0) return <div className="h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+  const toggleMute = () => {
+    if (videoRef.current) {
+      userHasInteracted.current = true;
+      setButtonPosition('corner');
+      
+      const newMutedState = !isMuted;
+      setIsMuted(newMutedState);
+      videoRef.current.muted = newMutedState;
+      videoRef.current.volume = newMutedState ? 0 : calculateVolume();
+      
+      // If video is paused (autoplay failed), play it now
+      if (videoRef.current.paused) {
+        videoRef.current.play().catch(e => console.log("Play failed:", e));
+      }
+    }
+  };
+
+  if (specials.length === 0) return <div className="h-[100vh] bg-black flex items-center justify-center text-white"><img src="./new/assets/logos/loading.svg" className="h-6 animate-pulse" /></div>;
 
   const currentSpecial = specials[currentIndex];
 
@@ -207,7 +248,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
+    <div ref={heroContainerRef} className="relative h-[100vh] md:h-[95vh] sm:h-[90vh] w-full overflow-hidden bg-black">
       <AnimatePresence mode='wait'>
         <motion.div
           key={currentSpecial.id}
@@ -217,8 +258,10 @@ const Hero = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
+          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
           dragElastic={1}
+          dragDirectionLock
+          onDragStart={onDragStart}
           onDragEnd={onDragEnd}
         >
           {/* Video Background */}
@@ -226,8 +269,9 @@ const Hero = () => {
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
             src={currentSpecial.video}
-            // Removed muted attribute to allow sound
+            muted={isMuted}
             playsInline
+            onCanPlay={handleCanPlay}
             onTimeUpdate={handleVideoUpdate}
             onEnded={handleVideoEnded}
           />
@@ -246,6 +290,28 @@ const Hero = () => {
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-20" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent z-20" />
+
+          {/* Mute/Unmute Button */}
+          <motion.button
+            onClick={toggleMute}
+            className="absolute bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm z-40"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: 1,
+              scale: buttonPosition === 'corner' ? 0.8 : 1.2,
+              top: buttonPosition === 'corner' ? '6rem' : '50%',
+              bottom: buttonPosition === 'corner' ? 'auto' : 'auto',
+              left: buttonPosition === 'corner' ? 'auto' : '50%',
+              right: buttonPosition === 'corner' ? '2rem' : 'auto',
+              x: buttonPosition === 'corner' ? '0%' : '-50%',
+              y: buttonPosition === 'corner' ? '0%' : '-50%',
+              padding: buttonPosition === 'corner' ? '0.75rem' : '1.5rem',
+            }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX className={buttonPosition === 'corner' ? 'w-6 h-6' : 'w-10 h-10'} /> : <Volume2 className={buttonPosition === 'corner' ? 'w-6 h-6' : 'w-10 h-10'} />}
+          </motion.button>
 
           {/* Content Info - Bottom Right */}
           <div className="absolute bottom-0 left-0 p-8 md:p-16 z-30 max-w-2xl w-full flex flex-col items-start text-left">
@@ -321,10 +387,8 @@ const Hero = () => {
 
       {/* Navigation Dots */}
       <div className="absolute z-40 hover:scale-125 transition-all duration-300 flex gap-3
-        /* Mobile: Vertical, Right side, Centered vertically */
+        /* Always Vertical, Right side, Centered vertically */
         flex-col right-4 top-1/2 -translate-y-1/2
-        /* Desktop: Horizontal, Bottom Right */
-        md:flex-row md:top-auto md:bottom-12 md:right-12 md:translate-y-0
       ">
         {specials.map((_, index) => (
           <button
@@ -339,7 +403,7 @@ const Hero = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-800 z-50">
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10 z-30">
         <motion.div 
           className="h-full bg-sam-red"
           style={{ width: `${progress}%` }}

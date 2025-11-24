@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
+import { SiTiktok, SiImdb } from 'react-icons/si';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Tour from './components/Tour';
@@ -53,8 +54,11 @@ function App() {
             <a href="https://www.youtube.com/@samjaycomic" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sam-red transition-colors">
               <Youtube className="w-5 h-5" />
             </a>
-            <a href="https://www.imdb.com/name/nm7615637/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sam-red transition-colors font-black text-lg leading-none" title="IMDb">
-           <img src="./new/assets/logos/imdb.svg" className="w-6 h-6" />
+            <a href="https://www.tiktok.com/@samjaycomic" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sam-red transition-colors" title="TikTok">
+              <SiTiktok className="w-5 h-5" />
+            </a>
+            <a href="https://www.imdb.com/name/nm7615637/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sam-red transition-colors" title="IMDb">
+              <SiImdb className="w-5 h-5" />
             </a>
              <a href="https://punchup.live/samjay" target="_blank" rel="noopener noreferrer" className="text-white hover:text-sam-red transition-colors font-black text-lg leading-none hover:fill-sam-red" title="PUNCHUP">
               <img src="./new/assets/logos/punchup.svg" className="h-3" />

@@ -107,7 +107,7 @@ const Tour = () => {
           Live <span className="text-sam-red">Dates</span>
         </h2>
         <p className="font-mono text-gray-400 max-w-md">
-          Catch Sam Jay live on stage. {allDates.length} Upcoming Shows
+          Catch Sam Jay live on stage. <span className="text-sam-red">{allDates.length} Upcoming Shows</span>
         </p>
       </div>
 
@@ -120,7 +120,7 @@ const Tour = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.05 }}
-            className="group relative flex flex-col md:flex-row items-start md:items-center justify-between p-6 border-b border-transparent hover:border-sam-red/50 hover:bg-white/5 transition-all duration-300"
+            className="group relative flex flex-col md:flex-row items-start md:items-center justify-between py-6 border-b border-transparent hover:border-sam-red/50 hover:bg-white/5 transition-all duration-300"
           >
             {/* Gradient Border Line */}
             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-sam-red/50 transition-colors duration-300" />

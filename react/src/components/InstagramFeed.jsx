@@ -6,7 +6,7 @@ const InstagramFeed = () => {
   const [instaData, setInstaData] = useState(null);
 
   useEffect(() => {
-    fetch(`data/instagram.json?t=${new Date().getTime()}`)
+    fetch(`./new/json/instagram.json?t=${new Date().getTime()}`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
@@ -21,7 +21,7 @@ const InstagramFeed = () => {
   const posts = instaData.posts.slice(0, 12); // Show first 12
 
   return (
-    <section className="relative w-full bg-transparent pt-24 pb-12 px-6 md:px-12 lg:px-24">
+    <section className="relative mb-[150px] w-full bg-transparent pt-24 pb-12 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto mb-12 flex items-center justify-between">
         <h2 className="font-display text-5xl md:text-7xl uppercase text-white">
           Instagram <span className="text-sam-red">Feed</span>
@@ -37,7 +37,7 @@ const InstagramFeed = () => {
         </a>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-8 max-w-7xl mx-auto px-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 max-w-7xl mx-auto px-4">
         {posts.map((post, idx) => {
           // Get up to 3 images for the fan effect
           const mediaItems = post.media || [];
@@ -67,8 +67,8 @@ const InstagramFeed = () => {
                   transition: { delay: idx * 0.1 } 
                 }
               }}
-              className="relative aspect-square group cursor-pointer z-0 hover:z-20"
-              style={{ perspective: "1000px" }}
+              className="relative group cursor-pointer z-0 hover:z-20"
+              style={{ perspective: "1000px", aspectRatio: "233/311" }}
             >
               <div className="relative w-full h-full preserve-3d">
                 {/* Fan Images (Background) */}

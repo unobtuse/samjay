@@ -21,7 +21,7 @@ import requests
 
 DEFAULT_USERNAME = "samjaycomic"
 DEFAULT_LIMIT = 10
-OUTPUT_PATH = Path("/var/www/html/gabemade/public/samjay/new/ig/instagram_feed.json")
+OUTPUT_PATH = Path("/var/www/html/gabemade/public/samjay/new/json/instagram.json")
 INSTAGRAM_APP_ID = "936619743392459"
 GRAPHQL_QUERY_HASH = "69cba40317214236af40e7efa697781d"
 GRAPHQL_PAGE_SIZE = 50
@@ -181,11 +181,32 @@ def isoformat(timestamp: Any) -> str | None:
 
 def save_payload(posts: List[Dict[str, Any]], username: str, output: Path) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Load existing data to preserve posts that might not be in the new fetch
+    existing_posts = []
+    if output.exists():
+        try:
+            existing_data = json.loads(output.read_text())
+            existing_posts = existing_data.get("posts", [])
+        except json.JSONDecodeError:
+            pass
+    
+    # Create a dictionary of existing posts keyed by ID for easy lookup
+    existing_posts_map = {post["id"]: post for post in existing_posts}
+    
+    # Update with new posts (overwriting if ID exists, adding if not)
+    for post in posts:
+        existing_posts_map[post["id"]] = post
+        
+    # Convert back to list and sort by timestamp descending
+    merged_posts = list(existing_posts_map.values())
+    merged_posts.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
     payload = {
         "username": username,
-        "count": len(posts),
+        "count": len(merged_posts),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "posts": posts,
+        "posts": merged_posts,
     }
     output.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
 

@@ -1,59 +1,62 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sam-black: #050505;
-  --color-sam-red: #FF2A00;
-  --color-sam-gray: #1A1A1A;
-  
-  --font-sans: "Inter", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-logo: "Helvetica", "Arial", sans-serif;
-  --font-display: "Bebas Neue", "Impact", sans-serif;
-  --font-anton: "Bebas Neue", sans-serif;
+    --color-sam-black: #050505;
+    --color-sam-red: #FF2A00;
+    --color-sam-gray: #1A1A1A;
+
+    --font-sans: "Inter", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-logo: "Helvetica", "Arial", sans-serif;
+    --font-display: "Bebas Neue", "Impact", sans-serif;
+    --font-anton: "Bebas Neue", sans-serif;
 }
 
 @layer base {
-  body {
-    @apply bg-sam-black text-white font-sans antialiased;
-    background-color: #050505;
-  }
+    body {
+        @apply bg-sam-black text-white font-sans antialiased;
+        background-color: #050505;
+    }
 }
 
 .glass-panel {
-  @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-xl;
+    @apply bg-black/40 backdrop-blur-md border border-black/10 shadow-xl;
 }
 
 .glass-card {
-  @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-lg hover:border-sam-red/50 transition-all duration-300;
+    @apply bg-black/40 backdrop-blur-md border border-black/10 shadow-lg hover:border-sam-red/50 transition-all duration-300;
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50;
 }
 
 /* Desktop Slider Mask */
 @media (min-width: 768px) {
-  .desktop-slider-mask {
-    mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
-  }
+    .desktop-slider-mask {
+        mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+        -webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+    }
 }
 
 .preserve-3d {
-  transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  height: 6px;
+    height: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.3);
 }

@@ -5,6 +5,9 @@ import { Music, Radio, ChevronLeft, ChevronRight } from 'lucide-react';
 const Podcasts = () => {
   const [podcasts, setPodcasts] = useState([]);
   const scrollRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     // Fetch from local API instead of static JSON
@@ -28,10 +31,32 @@ const Podcasts = () => {
     }
   };
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Adjust scroll speed here
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   if (podcasts.length === 0) return null;
 
   return (
-    <section className="relative w-full bg-transparent py-24 px-6 md:px-12 lg:px-24  overflow-hidden">
+    <section className="relative w-full bg-transparent py-24 px-0 md:px-12 lg:px-24  overflow-hidden">
       <div className="max-w-7xl mx-auto mb-12 flex justify-between items-end">
         <h2 className="font-display text-5xl md:text-7xl uppercase text-white">
           PODCAST <span className="text-sam-red">Appearances</span>
@@ -59,7 +84,11 @@ const Podcasts = () => {
       {/* Horizontal Slider Container */}
       <div 
         ref={scrollRef}
-        className="w-full overflow-x-auto pb-12 -mx-6 px-6 md:mx-0 md:px-0 custom-scrollbar scroll-smooth desktop-slider-mask"
+        className="w-full overflow-x-auto pb-12  px-0 md:mx-0 md:px-0 custom-scrollbar scroll-smooth desktop-slider-mask cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
       >
         <div className="flex gap-6 w-max items-start">
           {podcasts.map((pod, idx) => (
@@ -76,7 +105,8 @@ const Podcasts = () => {
                 <img 
                   src={pod.image} 
                   alt={pod.show} 
-                  className="w-full mb-6object-cover flex-shrink-0" // Removed grayscale
+                  draggable="false"
+                  className="w-full mb-6object-cover flex-shrink-0 pointer-events-none" // Removed grayscale
                 />
                 
                 <div className="flex-1 min-w-0 p-6">

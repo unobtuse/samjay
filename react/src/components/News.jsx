@@ -4,7 +4,20 @@ import { motion } from 'framer-motion';
 const News = () => {
   const [newsData, setNewsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [visibleCount, setVisibleCount] = useState(9); // Start with 9 items (3 rows * 3 columns)
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      setVisibleCount(window.innerWidth < 768 ? 3 : 9);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Fetch from our custom PHP endpoint that scrapes OG tags
@@ -23,7 +36,7 @@ const News = () => {
   }, []);
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 9); // Load 3 more rows (9 items)
+    setVisibleCount(prev => prev + (isMobile ? 3 : 9)); // Load 3 on mobile, 9 on desktop
   };
 
   if (loading) return <div className="text-white text-center py-12 font-mono">LOADING NEWS...</div>;
@@ -48,7 +61,7 @@ const News = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
-            className="group flex flex-col glass-card  overflow-hidden hover:shadow-xl/30 hover:scale-110 hover:z-3 transition-all duration-500"
+            className="group flex flex-col glass-card overflow-hidden hover:shadow-xl/30 hover:scale-105 hover:z-10 transition-all duration-500 h-auto self-start"
           >
             {/* Thumbnail Container */}
             <div className="relative w-full h-48 bg-gray-900 overflow-hidden">
@@ -65,7 +78,7 @@ const News = () => {
               )}
             </div>
 
-            <div className="p-6 flex flex-col flex-1">
+            <div className="p-6 flex flex-col">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sam-red font-display text-sm tracking-wide uppercase">
                   {item.source}
@@ -75,7 +88,7 @@ const News = () => {
                 </span>
               </div>
               
-              <h3 className="text-white font-sans text-lg font-bold leading-tight mb-2 group-hover:text-sam-red transition-colors line-clamp-3">
+              <h3 className="text-white font-sans text-lg font-bold leading-tight mb-2 group-hover:text-sam-red transition-colors">
                 {item.title}
               </h3>
             </div>
