@@ -1,0 +1,30 @@
+# FORCE DISABLE gzip compression for ALL files in this folder
+<IfModule mod_deflate.c>
+    SetEnv no-gzip 1
+    RemoveOutputFilter DEFLATE
+</IfModule>
+
+# Additional compression disabling
+SetEnv no-gzip 1
+RequestHeader unset Accept-Encoding
+
+# Disable all caching and transformation
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate, no-transform"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+    Header unset ETag
+    Header unset Last-Modified
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive Off
+</IfModule>
+
+# Ensure files are served without compression
+<FilesMatch "\.(js|json|html|mp4|webm|css)$">
+    SetEnv no-gzip 1
+    <IfModule mod_headers.c>
+        Header unset Content-Encoding
+    </IfModule>
+</FilesMatch>

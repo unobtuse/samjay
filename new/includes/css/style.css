@@ -1,0 +1,174 @@
+/*
+Theme Name:     Jupiter Child Theme
+Theme URI: 		http://themeforest.net/user/artbees
+Description:    Child theme for the Jupiter theme 
+Author:         Your name here
+Theme URI: 		http://themeforest.net/user/artbees
+Template:       jupiter
+Version:        1.0
+*/
+
+
+/*
+Sample : remove the comment and start adding your own custom CSS rules.
+
+body {
+	background-color:#fff;
+}
+
+*/
+
+.showbtncont {
+    display: grid!important;
+    grid-template-columns: 1fr 1fr!important;
+    grid-gap: 10px!important;
+    /*grid-template-areas: "images""info""underinfo""related"; */
+}
+
+.showbtncont div {
+    width: 100%!important;
+}
+
+#mce-EMAIL,
+#mc-embedded-subscribe {
+    border: 2px solid #000!important;
+    padding: 20px!important;
+    font-size: 14px!important;
+    font-weight: 900!important;
+    text-transform: uppercase!important;
+    border-radius: 0!important;
+}
+
+#mc_embed_signup input.email {
+    font-family: 'Roboto'!important;
+    color: #000!important;
+}
+
+#mc-embedded-subscribe {
+    padding: 15px 20px 25px 20px!important;
+    color: #000!important;
+    background: #fff!important;
+}
+
+.subwrap img {
+    display: none;
+}
+
+#mc-embedded-subscribe:hover {
+    background: #000!important;
+    color: #fff!important;
+}
+
+#mc_embed_signup_scroll {
+    display: grid!important;
+    grid-gap: 10px!important;
+    grid-template-areas: "mctxt mcmail mcsub ";
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#mc_embed_signup_scroll .clear {
+    position: relative!important;
+    left: 0!important;
+    grid-area: mcsub!important;
+}
+
+#mc_embed_signup_scroll .email {
+    position: relative!important;
+    left: 0!important;
+    width: 100%;
+    grid-area: mcmail!important;
+}
+
+#mc-embedded-subscribe {
+    width: 100%!important;
+}
+
+#mc_embed_signup_scroll label {
+    position: relative!important;
+    left: 0!important;
+    text-transform: uppercase;
+    color: #fff!important;
+    grid-area: mctxt!important;
+    padding-top: 15px!Important;
+    align-self: center!important;
+    padding: 0!important;
+}
+
+#mc-embedded-subscribe-form {
+    margin-bottom: 100px;
+    background: #000!Important;
+    padding: 10px!important;
+}
+
+#mc-embedded-subscribe-form * {
+    font-family: 'Roboto'!important;
+}
+
+ul.showlist {
+    display: grid!important;
+    grid-template-columns: 1fr 1fr 1fr!important;
+    grid-gap: 10px!important;
+}
+
+ul.showlist li {
+    margin: 0!important;
+    padding: 0!important;
+    width: 100%!important;
+    height: auto!important;
+}
+
+@media all and (max-width:767px) {
+    #mc_embed_signup_scroll {
+        display: grid!important;
+        grid-gap: 10px!important;
+        grid-template-areas: "mctxt" "mcmail" "mcsub "!important;
+        grid-template-columns: 1fr!important;
+    }
+    ul.showlist {
+        display: grid!important;
+        grid-template-columns: 1fr!important;
+        grid-gap: 10px!important;
+    }
+    ul.showlist li {
+        margin: 0!important;
+        padding: 0!important;
+        width: 100%!important
+    }
+}
+
+@media all and (min-width:641px) and (max-width:1024px) {
+    #mc_embed_signup_scroll {
+        display: grid!important;
+        grid-gap: 10px!important;
+        grid-template-areas: "mctxt mcmail mcsub "!important;
+        grid-template-columns: 1fr 1fr 1fr!important;
+    }
+    ul.showlist {
+        display: grid!important;
+        grid-template-columns: 1fr 1fr!important;
+        grid-gap: 10px!important;
+    }
+    ul.showlist li,
+    #triple li {
+        margin: 0!important;
+        padding: 0!important;
+        min-width: 100%!important
+    }
+}
+
+#triple li {
+    margin: 0!important;
+    padding: 0!important;
+    min-width: 100%!important
+}
+
+#mce-EMAIL::placeholder {
+    text-align: center!important;
+}
+
+.filmog,
+.bio,
+.pressbox,
+.vc_custom_1548356495847 {
+    background-attachment: fixed!important;
+}

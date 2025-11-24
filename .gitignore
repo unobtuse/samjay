@@ -1,0 +1,25 @@
+# Environment files with sensitive credentials
+.env
+react/.env
+*.env
+
+# Node modules
+node_modules/
+react/node_modules/
+
+# Build outputs
+dist/
+build/
+react/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
